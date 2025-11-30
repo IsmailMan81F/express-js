@@ -1,5 +1,5 @@
 //modules
-require('dotenv').config()
+require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const app = express();
@@ -14,7 +14,10 @@ const refreshRouter = require("./routes/refresh");
 const logoutRouter = require("./routes/logout");
 const employeesRouter = require("./routes/api/employees");
 const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
+const connectDB =require('./config/connectDB')
 
+connectDB();
 
 //middleware
 app.use(express.json());
@@ -35,7 +38,10 @@ app.all("*", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "404.html"));
 });
 
-//running the server
-app.listen(PORT, '0.0.0.0', () =>
-  console.log(`Server is running on http://localhost:${PORT}`)
-);
+mongoose.connection.once("open", () => {
+  console.log("MongoDB connected..");
+  //running the server
+  app.listen(PORT, "0.0.0.0", () =>
+    console.log(`Server is running on http://localhost:${PORT}`)
+  );
+});
