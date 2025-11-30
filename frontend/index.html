@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Auth Forms</title>
+  </head>
+  <body>
+    <!-- ===== REGISTER FORM ===== -->
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="text" name="username" placeholder="Username" required />
+      <input type="password" name="password" placeholder="Password" required />
+
+      <p>Select roles:</p>
+      <label><input type="checkbox" name="roles" value="user" /> User</label>
+      <label
+        ><input type="checkbox" name="roles" value="editor" /> Editor</label
+      >
+      <label><input type="checkbox" name="roles" value="admin" /> Admin</label>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <!-- ===== LOGIN FORM ===== -->
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" name="username" placeholder="username" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+
+    <!-- ===== LOGOUT BUTTON ===== -->
+    <h2>Logout</h2>
+    <button id="logoutBtn">Logout</button>
+
+    <script>
+      // ===== REGISTER =====
+      const registerForm = document.getElementById("registerForm");
+
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData(registerForm);
+        const data = Object.fromEntries(formData);
+
+        // Handle multiple roles
+        const selectedRoles = formData.getAll("roles"); // array of selected roles
+
+        // Map roles to their codes
+        const roleCodes = {
+          user: 1000,
+          editor: 2000,
+          admin: 3000,
+        };
+
+        const rolesObject = {};
+        selectedRoles.forEach((role) => {
+          rolesObject[role] = roleCodes[role];
+        });
+
+        // Replace the roles field in data with the object
+        data.roles = rolesObject;
+
+        // Send request
+        const res = await fetch("http://localhost:3500/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        const result = await res.json();
+        alert(result.message || "Registered!");
+        registerForm.reset();
+      });
+
+      // ===== LOGIN =====
+      const loginForm = document.getElementById("loginForm");
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(loginForm));
+        const res = await fetch("http://localhost:3500/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          credentials: "include",
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          alert("Logged in!");
+        } else {
+          alert(result.message || "Login failed");
+        }
+        loginForm.reset();
+      });
+
+      // ===== LOGOUT =====
+      const logoutBtn = document.getElementById("logoutBtn");
+      logoutBtn.addEventListener("click", async () => {
+        await fetch("http://localhost:3500/logout", { method: "GET" });
+        alert("Logged out!");
+      });
+    </script>
+  </body>
+</html>
