@@ -13,9 +13,10 @@ const registerRouter = require("./routes/register");
 const refreshRouter = require("./routes/refresh");
 const logoutRouter = require("./routes/logout");
 const employeesRouter = require("./routes/api/employees");
+const usersRouter = require("./routes/api/users");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
-const connectDB =require('./config/connectDB')
+const connectDB = require("./config/connectDB");
 
 connectDB();
 
@@ -30,6 +31,7 @@ app.use("/refresh", refreshRouter);
 app.use("/register", registerRouter);
 app.use("/logout", logoutRouter);
 app.use("/auth", authRouter);
+app.use("/users", usersRouter);
 app.use("/employees", employeesRouter);
 app.use("/", rootRouter);
 

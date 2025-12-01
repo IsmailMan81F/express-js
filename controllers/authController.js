@@ -1,12 +1,4 @@
-const data = {
-  users: require("../data/users.json"),
-  setUsers(newUsers) {
-    this.users = newUsers;
-  },
-};
-
-const path = require("path");
-const fsPromises = require("fs").promises;
+const User = require('../model/user')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -17,7 +9,7 @@ const authController = async (req, res) => {
   if (!username || !password)
     return res.status(401).send("message: Username and Password are required");
 
-  const foundUser = data.users.find((user) => user.username == username);
+  const foundUser = await User.findOne({username: username})
   if (!foundUser)
     return res.status(404).json({ Error: `User : ${username} not found` });
 
@@ -36,11 +28,8 @@ const authController = async (req, res) => {
 
     try {
       foundUser.refreshToken = refreshToken;
-      data.setUsers(data.users);
-      await fsPromises.writeFile(
-        path.join(__dirname, "..", "data", "users.json"),
-        JSON.stringify(data.users)
-      );
+      await foundUser.save()
+
     } catch (error) {
       console.log("Error : " + error.message);
       return res.status(501).send("Error: Something went wrong");
@@ -56,7 +45,7 @@ const authController = async (req, res) => {
     return res
       .status(200)
       .json([
-        { message: `The user : "${foundUser.username}" is authorised` },
+        { message: `This user is authorised` },
         { accessToken },
       ]);
   } else {

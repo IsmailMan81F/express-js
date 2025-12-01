@@ -14,10 +14,9 @@ const verifyJWT = (req, res, next) => {
         .sendStatus(403)
     else {
       req.username = decoded.userInfo.username;
+      next();
     }
   });
-
-  next();
 };
 
 module.exports = verifyJWT;

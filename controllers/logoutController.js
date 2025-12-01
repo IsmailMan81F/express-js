@@ -1,12 +1,5 @@
-const data = {
-  users: require("../data/users.json"),
-  setUsers(newUsers) {
-    this.users = newUsers;
-  },
-};
+const User = require("../model/user");
 
-const path = require("path");
-const fsPromises = require("fs").promises;
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
@@ -15,9 +8,7 @@ const logoutController = async (req, res) => {
   if (!cookie?.jwt) return res.sendStatus(204);
   else {
     const refreshToken = cookie.jwt;
-    const currentUser = data.users.find(
-      (user) => user.refreshToken == refreshToken
-    );
+    const currentUser = await User.findOne({ refreshToken: refreshToken });
     if (!currentUser) {
       res.clearCookie("jwt", {
         httpOnly: true,
@@ -32,15 +23,8 @@ const logoutController = async (req, res) => {
           if (err || currentUser.username != decoded.userInfo.username) {
             res.status(404);
           } else {
-            const otherUsers = data.users.filter(
-              (user) => user.refreshToken != refreshToken
-            );
             currentUser.refreshToken = "";
-            data.setUsers([...otherUsers, currentUser]);
-            await fsPromises.writeFile(
-              path.join(__dirname, "..", "data", "users.json"),
-              JSON.stringify(data.users)
-            );
+            await currentUser.save();
             res.clearCookie("jwt", {
               httpOnly: true,
             });
