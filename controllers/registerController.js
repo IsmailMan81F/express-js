@@ -1,18 +1,15 @@
-
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
 
 const registerController = async (req, res) => {
   const { username, password, roles } = req.body;
 
-  if (!username || !password )
-    return res
-      .status(401)
-      .send("message: Username, Password are required");
+  if (!username || !password)
+    return res.status(401).json({ message: "Username, Password are required" });
 
   const exist = await User.findOne({ username: username });
-  console.log(exist)
-  if (exist) return res.status(409).send("Error: The user already exists");
+  console.log(exist);
+  if (exist) return res.status(409).json({ Error: "The user already exists" });
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -24,10 +21,12 @@ const registerController = async (req, res) => {
     });
     const result = await newUser.save();
 
-    res.status(201).send(`message: New user ${result.username} was successfuly created`);
+    res
+      .status(201)
+      .json({ message: `New user ${result.username} was successfuly created` });
   } catch (error) {
     console.log("Error : " + error.message);
-    return res.status(501).send(`Error: ${error.message}`);
+    return res.status(501).json({ Error: error.message });
   }
 };
 
