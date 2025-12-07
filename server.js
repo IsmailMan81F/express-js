@@ -17,6 +17,8 @@ const usersRouter = require("./routes/api/users");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const connectDB = require("./config/connectDB");
+const verifyJWT = require("./middleware/verifyJWT");
+const verifyRoles = require("./middleware/verifyRoles");
 
 connectDB();
 
@@ -30,6 +32,8 @@ app.use("/subdir", subRouter);
 app.use("/refresh", refreshRouter);
 app.use("/register", registerRouter);
 app.use("/logout", logoutRouter);
+app.get("/verifyAuth", verifyJWT, (res, req) => res.sendStatus(200));
+app.get("/verifyRoles", verifyRoles, (res, req) => res.sendStatus(200));
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/employees", employeesRouter);
