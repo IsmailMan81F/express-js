@@ -8,7 +8,6 @@ const registerController = async (req, res) => {
     return res.status(401).json({ message: "Username, Password are required" });
 
   const exist = await User.findOne({ username: username });
-  console.log(exist);
   if (exist) return res.status(409).json({ Error: "The user already exists" });
 
   try {
