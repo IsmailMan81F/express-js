@@ -1,7 +1,6 @@
 # EXPRESS.JS AUTHENTICATION & AUTHORIZATION API
 
 
-
 > A secure and modular Node.js / Express.js backend implementing JWT authentication, refresh/access tokens, HTTP-only cookies, role-based authorization, CORS configuration, and a clean scalable architecture using controllers, routes, and reusable middleware.
 
 ## FEATURES
